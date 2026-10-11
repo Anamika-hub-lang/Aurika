@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
@@ -53,7 +54,7 @@ function NavLinkItem({
       to={href}
       onClick={onClick}
       className={cn(
-        "relative inline-flex shrink-0 items-center h-10 px-0.5 text-sm font-medium transition-colors whitespace-nowrap",
+        "relative shrink-0 items-center h-10 px-0.5 text-sm font-medium transition-colors whitespace-nowrap inline-flex",
         active
           ? "text-coral after:absolute after:bottom-1 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-coral"
           : "text-charcoal/75 hover:text-coral",
@@ -76,6 +77,8 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const { pathname } = useLocation();
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -83,13 +86,18 @@ export function Header() {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   const iconBtn =
     "inline-flex items-center justify-center h-10 w-10 rounded-full text-charcoal hover:bg-coral-soft/80 transition-colors shrink-0";
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 bg-cream/97 backdrop-blur-md transition-shadow duration-300",
+        "sticky top-0 z-50 bg-cream/97 transition-shadow duration-300",
+        !menuOpen && "backdrop-blur-md",
         scrolled ? "shadow-sm border-b border-border/50" : "border-b border-border/30",
       )}
     >
@@ -184,77 +192,88 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile drawer */}
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            <motion.button
-              type="button"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-charcoal/40 lg:hidden"
-              aria-label="Close menu overlay"
-              onClick={() => setMenuOpen(false)}
-            />
-            <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed left-0 top-0 z-50 flex h-full w-[min(100%,320px)] flex-col bg-cream shadow-2xl lg:hidden"
-            >
-              <div className="flex items-center justify-between border-b border-border px-5 h-14">
-                <span className="font-serif text-sm tracking-widest text-coral">
-                  Menu
-                </span>
-                <button
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {menuOpen && (
+              <div className="lg:hidden">
+                <motion.button
                   type="button"
-                  className={iconBtn}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[200] bg-charcoal/50"
+                  aria-label="Close menu overlay"
                   onClick={() => setMenuOpen(false)}
-                  aria-label="Close menu"
+                />
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Navigation menu"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "-100%" }}
+                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
+                  className="fixed left-0 top-0 z-[201] flex h-[100dvh] w-[min(100%,300px)] flex-col bg-cream shadow-2xl"
                 >
-                  <X className="h-5 w-5" />
-                </button>
+                  <div
+                    className="flex shrink-0 items-center justify-between border-b border-border px-4 h-14 bg-cream"
+                  >
+                    <span className="font-serif text-base text-coral">Menu</span>
+                    <button
+                      type="button"
+                      className={iconBtn}
+                      onClick={() => setMenuOpen(false)}
+                      aria-label="Close menu"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <nav
+                    className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3"
+                    aria-label="Mobile"
+                  >
+                    {navLinks.map((l) => (
+                      <NavLinkItem
+                        key={l.label}
+                        href={l.href}
+                        label={l.label}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex h-12 w-full items-center border-b border-border/50 text-base font-medium after:!hidden after:content-none"
+                      />
+                    ))}
+                  </nav>
+
+                  <div className="shrink-0 border-t border-border bg-cream p-4 space-y-2">
+                    <button
+                      type="button"
+                      className="flex w-full items-center gap-3 rounded-xl border border-border bg-white px-4 h-11 text-sm text-charcoal"
+                    >
+                      <User className="h-4 w-4 text-coral shrink-0" />
+                      Atelier Guest
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        openCart();
+                      }}
+                      className="flex w-full items-center justify-between rounded-xl bg-coral px-4 h-11 text-sm font-medium text-white"
+                    >
+                      <span className="flex items-center gap-2">
+                        <ShoppingBag className="h-4 w-4 shrink-0" />
+                        Your Bag
+                      </span>
+                      <span className="tabular-nums">{formatINR(subtotal)}</span>
+                    </button>
+                  </div>
+                </motion.div>
               </div>
-              <nav className="flex flex-col gap-1 p-5 overflow-y-auto">
-                {navLinks.map((l) => (
-                  <NavLinkItem
-                    key={l.label}
-                    href={l.href}
-                    label={l.label}
-                    onClick={() => setMenuOpen(false)}
-                    className="h-11 justify-start text-sm tracking-widest after:hidden border-b border-border/40 w-full"
-                  />
-                ))}
-              </nav>
-              <div className="mt-auto border-t border-border p-5 space-y-3">
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-xl border border-border bg-white px-4 h-11 text-sm"
-                >
-                  <User className="h-4 w-4 text-coral" />
-                  Atelier Guest
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    openCart();
-                  }}
-                  className="flex w-full items-center justify-between rounded-xl bg-coral px-4 h-11 text-sm text-white"
-                >
-                  <span className="flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4" />
-                    Your Bag
-                  </span>
-                  <span className="tabular-nums">{formatINR(subtotal)}</span>
-                </button>
-              </div>
-            </motion.div>
-          </>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </header>
   );
 }
