@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#faf9f6"/>
+  <path d="M200 450 L350 350 L400 500 L450 350 L600 450 L500 550 L400 520 L300 550 Z" fill="#e8b4b8"/>
+  <path d="M280 480 Q400 620 520 480" fill="none" stroke="#c49a9e" stroke-width="24"/>
+  <rect x="370" y="300" width="60" height="80" rx="8" fill="#d4a5a9"/>
+  <text x="400" y="900" text-anchor="middle" font-family="Georgia" font-size="26" fill="#3d0075">Silk Ribbon Bow</text>
+</svg>

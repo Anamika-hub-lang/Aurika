@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000">
+  <rect width="800" height="1000" fill="#f0ebff"/>
+  <ellipse cx="400" cy="500" rx="200" ry="80" fill="#b291d1"/>
+  <ellipse cx="400" cy="500" rx="120" ry="50" fill="#d8bfd8"/>
+  <text x="400" y="880" text-anchor="middle" font-family="Georgia" font-size="26" fill="#3d0075">Cloud Scrunchie</text>
+</svg>

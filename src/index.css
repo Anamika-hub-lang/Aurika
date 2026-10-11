@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  --font-playfair: "Playfair Display", Georgia, serif;
+  --font-inter: "Poppins", "Inter", system-ui, sans-serif;
+  --cream: #fff9f5;
+  --cream-dark: #faf9f6;
+  --coral: #ff5a5f;
+  --coral-deep: #e84e53;
+  --coral-soft: #ffe8e9;
+  --purple: #3d0075;
+  --purple-deep: #4b0082;
+  --purple-soft: #6d3d91;
+  --lavender: #e6e6fa;
+  --lavender-mid: #b291d1;
+  --charcoal: #2a2a2a;
+  --muted: #6b6b6b;
+  --border: #e8e4df;
+  --card-border: #141414;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  --color-coral: var(--coral);
+  --color-coral-deep: var(--coral-deep);
+  --color-coral-soft: var(--coral-soft);
+  --color-purple: var(--purple);
+  --color-purple-deep: var(--purple-deep);
+  --color-purple-soft: var(--purple-soft);
+  --color-lavender: var(--lavender);
+  --color-lavender-mid: var(--lavender-mid);
+  --color-charcoal: var(--charcoal);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-card-border: var(--card-border);
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.font-serif {
+  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+}
+
+.font-script {
+  font-family: "Great Vibes", "Segoe Script", cursive;
+}
