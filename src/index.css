@@ -56,6 +56,11 @@ body {
   flex-direction: column;
 }
 
+/* Keep page content from painting over the mobile menu drawer */
+html.mobile-menu-open main {
+  visibility: hidden;
+}
+
 .font-serif {
   font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
 }

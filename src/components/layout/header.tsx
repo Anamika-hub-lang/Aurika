@@ -81,8 +81,16 @@ export function Header() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.documentElement.classList.toggle("mobile-menu-open", menuOpen);
+    const main = document.querySelector("main");
+    if (main) {
+      if (menuOpen) main.setAttribute("inert", "");
+      else main.removeAttribute("inert");
+    }
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.classList.remove("mobile-menu-open");
+      document.querySelector("main")?.removeAttribute("inert");
     };
   }, [menuOpen]);
 
@@ -196,28 +204,31 @@ export function Header() {
         createPortal(
           <AnimatePresence>
             {menuOpen && (
-              <div className="lg:hidden">
+              <>
                 <motion.button
                   type="button"
+                  key="mobile-menu-overlay"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[200] bg-charcoal/50"
+                  className="fixed inset-0 z-[9998] bg-charcoal/55 lg:hidden"
                   aria-label="Close menu overlay"
                   onClick={() => setMenuOpen(false)}
                 />
-                <motion.div
+                <motion.aside
+                  key="mobile-menu-panel"
                   role="dialog"
                   aria-modal="true"
                   aria-label="Navigation menu"
                   initial={{ x: "-100%" }}
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
-                  transition={{ type: "spring", damping: 28, stiffness: 320 }}
-                  className="fixed left-0 top-0 z-[201] flex h-[100dvh] w-[min(100%,300px)] flex-col bg-cream shadow-2xl"
+                  transition={{ type: "spring", damping: 30, stiffness: 340 }}
+                  className="fixed inset-y-0 left-0 z-[9999] grid w-[min(88vw,320px)] grid-rows-[3.5rem_1fr_auto] bg-white shadow-2xl lg:hidden"
+                  style={{ height: "100dvh", maxHeight: "100dvh" }}
                 >
                   <div
-                    className="flex shrink-0 items-center justify-between border-b border-border px-4 h-14 bg-cream"
+                    className="flex items-center justify-between border-b border-border px-4 bg-white"
                   >
                     <span className="font-serif text-base text-coral">Menu</span>
                     <button
@@ -231,24 +242,36 @@ export function Header() {
                   </div>
 
                   <nav
-                    className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3"
-                    aria-label="Mobile"
+                    className="overflow-y-auto bg-white px-3 py-2"
+                    aria-label="Mobile navigation"
                   >
-                    {navLinks.map((l) => (
-                      <NavLinkItem
-                        key={l.label}
-                        href={l.href}
-                        label={l.label}
-                        onClick={() => setMenuOpen(false)}
-                        className="flex h-12 w-full items-center border-b border-border/50 text-base font-medium after:!hidden after:content-none"
-                      />
-                    ))}
+                    <ul className="flex flex-col">
+                      {navLinks.map((l) => {
+                        const active = linkIsActive(pathname, "", l.href);
+                        return (
+                          <li key={l.label}>
+                            <Link
+                              to={l.href}
+                              onClick={() => setMenuOpen(false)}
+                              className={cn(
+                                "flex min-h-[3.25rem] w-full items-center rounded-xl px-4 text-[1.05rem] font-medium transition-colors",
+                                active
+                                  ? "bg-coral-soft text-coral"
+                                  : "text-charcoal hover:bg-cream",
+                              )}
+                            >
+                              {l.label}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </nav>
 
-                  <div className="shrink-0 border-t border-border bg-cream p-4 space-y-2">
+                  <div className="border-t border-border bg-white p-4 space-y-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
                     <button
                       type="button"
-                      className="flex w-full items-center gap-3 rounded-xl border border-border bg-white px-4 h-11 text-sm text-charcoal"
+                      className="flex w-full items-center gap-3 rounded-xl border border-border bg-cream px-4 h-11 text-sm text-charcoal"
                     >
                       <User className="h-4 w-4 text-coral shrink-0" />
                       Atelier Guest
@@ -268,8 +291,8 @@ export function Header() {
                       <span className="tabular-nums">{formatINR(subtotal)}</span>
                     </button>
                   </div>
-                </motion.div>
-              </div>
+                </motion.aside>
+              </>
             )}
           </AnimatePresence>,
           document.body,
